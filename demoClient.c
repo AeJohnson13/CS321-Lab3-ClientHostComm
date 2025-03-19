@@ -7,6 +7,7 @@
 #include <string.h>
 #include <unistd.h>
 
+
 #define PORT 8080
 
 int main() {
@@ -40,7 +41,6 @@ int main() {
         printf("Enter message: ");
         fgets(buffer, 1024, stdin);
         send(sock, buffer, strlen(buffer), 0);
-
         // Receive response
         int valread = read(sock, buffer, 1024);
         if (valread > 0) {
@@ -51,3 +51,6 @@ int main() {
 
     return 0;
 }
+
+
+
