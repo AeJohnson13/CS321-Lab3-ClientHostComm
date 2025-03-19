@@ -1,4 +1,5 @@
-//Created by Ryland Sacker and Alex Johnson
+// demoClient.c
+// Created by Ryland Sacker and Alex Johnson
 #include <stdio.h>
 #include <sys/socket.h>
 #include <stdlib.h>
@@ -11,7 +12,6 @@
 #define PORT 8080
 
 int main() {
-    signal(SIGUSR1, sigHandler);
     int sock = 0;
     struct sockaddr_in serv_addr;
     char buffer[1024] = {0};

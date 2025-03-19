@@ -1,3 +1,4 @@
+// demoServer.c
 // Created by Ryland Sacker and Alex Johnson
 #include <unistd.h>
 #include <stdio.h>
@@ -13,7 +14,6 @@
 void sigHandler(int);
 
 int main() {
-    signal(SIGINT, sigHandler);
    
     int server_fd, client_sockets[MAX_CLIENTS], new_socket;
     struct sockaddr_in address;
