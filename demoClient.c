@@ -41,7 +41,7 @@ int main() {
         printf("Enter message: ");
         fgets(buffer, 1024, stdin);
         send(sock, buffer, strlen(buffer), 0);
-        if(strlen(buffer == 3) && strstr(buffer, "BYE") != NULL)
+        if(strlen(buffer) == 3 && strstr(buffer, "BYE") != NULL)
         {
           return 0;
         } 
@@ -49,7 +49,7 @@ int main() {
         // Receive response
         int valread = read(sock, buffer, 1024);
         
-        if(strlen(buffer == 3) && strstr(buffer, "BYE") != NULL)
+        if(strlen(buffer) == 3 && strstr(buffer, "BYE") != NULL)
         {
           return 0;
         } 
