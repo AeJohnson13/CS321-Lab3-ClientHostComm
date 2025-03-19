@@ -57,16 +57,23 @@ int main() {
     printf("Server listening on port %d\n", PORT);
 
     // Accept two clients
-    for (int i = 0; i < MAX_CLIENTS; i++) {
-        if ((new_socket = accept(server_fd, (struct sockaddr *)&address, (socklen_t *)&addrlen)) < 0) {
-            perror("Accept failed");
-            exit(EXIT_FAILURE);
+    if ((new_socket = accept(server_fd, (struct sockaddr *)&address, (socklen_t *)&addrlen)) < 0) {
+        perror("Accept failed");
+        exit(EXIT_FAILURE);
         }
-        client_sockets[i] = new_socket;
-        printf("Client %d connected\n", i + 1);
-    }
+    client_sockets[0] = new_socket;
+    send(new_socket, "Only 1 user connected", strlen("Only 1 user connected"), 0);
 
-    // Relay messages between the two clients
+        printf("Client %d connected\n", 0 + 1);
+    
+    if ((new_socket = accept(server_fd, (struct sockaddr *)&address, (socklen_t *)&addrlen)) < 0) {
+        perror("Accept failed");
+        exit(EXIT_FAILURE);
+    }
+    client_sockets[1] = new_socket;
+    printf("Client %d connected\n", 1 + 1);
+   
+   // Relay messages between the two clients
     while (1) {
         for (int i = 0; i < MAX_CLIENTS; i++) {
             int valread = read(client_sockets[i], buffer, 1024);
