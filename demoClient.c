@@ -10,6 +10,8 @@
 
 #define PORT 8080
 
+pid_t pid = getpid();
+
 int main() {
     int sock = 0;
     struct sockaddr_in serv_addr;
@@ -35,6 +37,7 @@ int main() {
         printf("\nConnection Failed \n");
         return -1;
     }
+    send(sock, &pid, size(pid), 0);
 
     // Message loop
     while (1) {
