@@ -6,13 +6,12 @@
 #include <arpa/inet.h>
 #include <string.h>
 #include <unistd.h>
-
+#include <sys/wait.h>
 
 #define PORT 8080
 
-pid_t pid = getpid();
-
 int main() {
+    signal(SIGUSR1, sigHandler);
     int sock = 0;
     struct sockaddr_in serv_addr;
     char buffer[1024] = {0};
@@ -37,7 +36,6 @@ int main() {
         printf("\nConnection Failed \n");
         return -1;
     }
-    send(sock, &pid, size(pid), 0);
 
     // Message loop
     while (1) {
@@ -55,6 +53,4 @@ int main() {
 
     return 0;
 }
-
-
 

@@ -12,8 +12,6 @@
 #define MAX_CLIENTS 2
 void sigHandler(int);
 
-pid_t client_pid;
-
 int main() {
     signal(SIGINT, sigHandler);
    
@@ -64,17 +62,16 @@ int main() {
         exit(EXIT_FAILURE);
         }
     client_sockets[0] = new_socket;
-    read(client_sockets[0], &client_pid, sizeof(client_pid));
-
         printf("Client %d connected\n", 0 + 1);
-    
+
     if ((new_socket = accept(server_fd, (struct sockaddr *)&address, (socklen_t *)&addrlen)) < 0) {
         perror("Accept failed");
         exit(EXIT_FAILURE);
     }
     client_sockets[1] = new_socket;
-    printf("Client %d connected\n", 1 + 1);
+        printf("Client %d connected\n", 1 + 1);
    
+
    // Relay messages between the two clients
     while (1) {
         for (int i = 0; i < MAX_CLIENTS; i++) {
