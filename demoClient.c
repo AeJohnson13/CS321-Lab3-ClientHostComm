@@ -41,8 +41,19 @@ int main() {
         printf("Enter message: ");
         fgets(buffer, 1024, stdin);
         send(sock, buffer, strlen(buffer), 0);
+        if(strlen(buffer == 3) && strstr(buffer, "BYE") != NULL)
+        {
+          return 0;
+        } 
+
         // Receive response
         int valread = read(sock, buffer, 1024);
+        
+        if(strlen(buffer == 3) && strstr(buffer, "BYE") != NULL)
+        {
+          return 0;
+        } 
+
         if (valread > 0) {
             buffer[valread] = '\0';
             printf("Received: %s\n", buffer);

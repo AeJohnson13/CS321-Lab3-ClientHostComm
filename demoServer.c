@@ -70,7 +70,7 @@ int main() {
     while (1) {
         for (int i = 0; i < MAX_CLIENTS; i++) {
             int valread = read(client_sockets[i], buffer, 1024);
-            else if (valread > 0) {
+            if (valread > 0) {
                 buffer[valread] = '\0';
                 printf("Client %d: %s\n", i + 1, buffer);
 
