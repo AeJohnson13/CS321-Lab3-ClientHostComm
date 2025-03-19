@@ -73,6 +73,10 @@ int main() {
                 // Send message to the other client
                 int recipient = (i == 0) ? 1 : 0;
                 send(client_sockets[recipient], buffer, strlen(buffer), 0);
+		char *s = strstr(buffer, "BYE");
+		if(s != NULL) {
+			return 0;
+		}
             }
         }
     }
