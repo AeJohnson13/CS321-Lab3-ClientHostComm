@@ -60,16 +60,25 @@ int main() {
     if ((new_socket = accept(server_fd, (struct sockaddr *)&address, (socklen_t *)&addrlen)) < 0) {
         perror("Accept failed");
         exit(EXIT_FAILURE);
-        }
+    }
     client_sockets[0] = new_socket;
-        printf("Client %d connected\n", 0 + 1);
+    printf("Client %d connected\n", 0 + 1);
+		char *oneUser = "Only one user is connected, waiting for second";
+		send(client_sockets[0], oneUser, strlen(oneUser), 0);
+    
 
-    if ((new_socket = accept(server_fd, (struct sockaddr *)&address, (socklen_t *)&addrlen)) < 0) {
+		if ((new_socket = accept(server_fd, (struct sockaddr *)&address, (socklen_t *)&addrlen)) < 0) {
         perror("Accept failed");
         exit(EXIT_FAILURE);
     }
     client_sockets[1] = new_socket;
-        printf("Client %d connected\n", 1 + 1);
+    printf("Client %d connected\n", 1 + 1);
+		char *startMessage = "Two clients connected";
+		
+		send(client_sockets[0], startMessage, strlen(startMessage), 0);
+		send(client_sockets[1], startMessage, strlen(startMessage), 0);
+    
+    
    
 
    // Relay messages between the two clients

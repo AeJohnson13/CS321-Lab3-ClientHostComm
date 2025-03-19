@@ -37,6 +37,20 @@ int main() {
         return -1;
     }
 
+		// Wait for two clients to be connected
+		while (1){
+			int valread = read(sock, buffer, 1024);
+			if(valread > 0) { 
+				buffer[valread] = '\0';
+				printf("%s\n", buffer);
+			} 
+			char *s = strstr(buffer, "Two clients connected"); 
+			if( s != NULL){
+				break;
+			}  
+		}
+
+		
     // Message loop
     while (1) {
         printf("Enter message: ");
