@@ -1,61 +1,81 @@
-// Server side C/C++ program to demonstrate Socket programming
+// Created by Ryland Sacker and Alex Johnson
 #include <unistd.h>
 #include <stdio.h>
 #include <sys/socket.h>
 #include <stdlib.h>
 #include <netinet/in.h>
 #include <string.h>
+#include <errno.h>
+
 #define PORT 8080
-int main(int argc, char const *argv[])
-{
-    int server_fd, new_socket, valread;
-    struct sockaddr_in address; //Structures for handling internet addresses
-    int opt = 1;
-    int addrlen = sizeof(address);
+#define MAX_CLIENTS 2
+
+int main() {
+    int server_fd, client_sockets[MAX_CLIENTS], new_socket;
+    struct sockaddr_in address;
+    int opt = 1, addrlen = sizeof(address);
     char buffer[1024] = {0};
-    char *hello = "Hello from server"; //msg to send to a client
-       
-    // Creating socket file descriptor
-    if ((server_fd = socket(AF_INET, SOCK_STREAM, 0)) == 0) //create an endpoint for communication. Basically opens a file where both the communicating parties can write 
-    {
-        perror("socket failed"); //display system error
-        exit(EXIT_FAILURE); //defined in stdlib.h. EXIT_SUCCESS = 0, EXIT_FAILURE = 8
+    
+    // Initialize client sockets to 0 (empty)
+    for (int i = 0; i < MAX_CLIENTS; i++) {
+        client_sockets[i] = 0;
     }
-       
-    // Forcefully attaching socket to the port 8080
-    if (setsockopt(server_fd, SOL_SOCKET, SO_REUSEADDR | SO_REUSEPORT,
-                                                  &opt, sizeof(opt))) //set the socket options.
-	                                                              //online resource: https://pubs.opengroup.org/onlinepubs/000095399/functions/setsockopt.html
-    {
+
+    // Create socket file descriptor
+    if ((server_fd = socket(AF_INET, SOCK_STREAM, 0)) == 0) {
+        perror("Socket failed");
+        exit(EXIT_FAILURE);
+    }
+
+    // Set socket options
+    if (setsockopt(server_fd, SOL_SOCKET, SO_REUSEADDR | SO_REUSEPORT, &opt, sizeof(opt))) {
         perror("setsockopt");
         exit(EXIT_FAILURE);
     }
-    address.sin_family = AF_INET; //AF_INET specisies what family of address it is (here it is IPV4)
-    address.sin_addr.s_addr = INADDR_ANY; //INADDR_ANY is an IP address that is used when we don't want to bind a socket to any specific IP
-    address.sin_port = htons( PORT );//host-to-network short. This means it works on 16-bit short integers. i.e. 2 bytes
-       
-    // Forcefully attaching socket to the port 8080
-    if (bind(server_fd, (struct sockaddr *)&address, 
-                                 sizeof(address))<0) //bind the socket file descriptor to the socket address. Online resource: https://pubs.opengroup.org/onlinepubs/009695399/functions/bind.html 
-    {
-        perror("bind failed");
+
+    // Define server address
+    address.sin_family = AF_INET;
+    address.sin_addr.s_addr = INADDR_ANY;
+    address.sin_port = htons(PORT);
+
+    // Bind the socket
+    if (bind(server_fd, (struct sockaddr *)&address, sizeof(address)) < 0) {
+        perror("Bind failed");
         exit(EXIT_FAILURE);
     }
-    if (listen(server_fd, 3) < 0) //listen for connections on a socket
-    {
-        perror("listen");
+
+    // Listen for connections
+    if (listen(server_fd, MAX_CLIENTS) < 0) {
+        perror("Listen");
         exit(EXIT_FAILURE);
     }
-    if ((new_socket = accept(server_fd, (struct sockaddr *)&address, 
-                       (socklen_t*)&addrlen))<0)
-    {
-        perror("accept");
-        exit(EXIT_FAILURE);
+
+    printf("Server listening on port %d\n", PORT);
+
+    // Accept two clients
+    for (int i = 0; i < MAX_CLIENTS; i++) {
+        if ((new_socket = accept(server_fd, (struct sockaddr *)&address, (socklen_t *)&addrlen)) < 0) {
+            perror("Accept failed");
+            exit(EXIT_FAILURE);
+        }
+        client_sockets[i] = new_socket;
+        printf("Client %d connected\n", i + 1);
     }
-    valread = read( new_socket , buffer, 1024);
-    printf("%s\n",buffer );
-    send(new_socket , hello , strlen(hello) , 0 );
-    printf("Hello message sent\n");
+
+    // Relay messages between the two clients
+    while (1) {
+        for (int i = 0; i < MAX_CLIENTS; i++) {
+            int valread = read(client_sockets[i], buffer, 1024);
+            if (valread > 0) {
+                buffer[valread] = '\0';
+                printf("Client %d: %s\n", i + 1, buffer);
+
+                // Send message to the other client
+                int recipient = (i == 0) ? 1 : 0;
+                send(client_sockets[recipient], buffer, strlen(buffer), 0);
+            }
+        }
+    }
+
     return 0;
 }
-

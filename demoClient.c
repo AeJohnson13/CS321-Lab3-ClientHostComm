@@ -1,43 +1,53 @@
-// Client side C/C++ program to demonstrate Socket programming
+//Created by Ryland Sacker and Alex Johnson
 #include <stdio.h>
 #include <sys/socket.h>
+#include <stdlib.h>
+#include <netinet/in.h>
 #include <arpa/inet.h>
-#include <unistd.h>
 #include <string.h>
+#include <unistd.h>
+
 #define PORT 8080
-   
-int main(int argc, char const *argv[])
-{
-    int sock = 0, valread;
+
+int main() {
+    int sock = 0;
     struct sockaddr_in serv_addr;
-    char recieveBuffer[1024] = {0};
-    char sendBuffer[1024] = {0};
-    if ((sock = socket(AF_INET, SOCK_STREAM, 0)) < 0)
-    {
+    char buffer[1024] = {0};
+
+    // Create socket
+    if ((sock = socket(AF_INET, SOCK_STREAM, 0)) < 0) {
         printf("\n Socket creation error \n");
         return -1;
     }
-   
+
     serv_addr.sin_family = AF_INET;
     serv_addr.sin_port = htons(PORT);
-       
+
     // Convert IPv4 and IPv6 addresses from text to binary form
-    if(inet_pton(AF_INET, "127.0.0.1", &serv_addr.sin_addr)<=0) 
-    {
+    if (inet_pton(AF_INET, "127.0.0.1", &serv_addr.sin_addr) <= 0) {
         printf("\nInvalid address/ Address not supported \n");
         return -1;
     }
-   
-    if (connect(sock, (struct sockaddr *)&serv_addr, sizeof(serv_addr)) < 0)
-    {
+
+    // Connect to server
+    if (connect(sock, (struct sockaddr *)&serv_addr, sizeof(serv_addr)) < 0) {
         printf("\nConnection Failed \n");
         return -1;
     }
-    
-    fgets(sendBuffer, sizeof(sendBuffer), stdin);
-    send(sock , sendBuffer , strlen(sendBuffer) , 0 );
-    
-    valread = read( sock , recieveBuffer, 1024);
-    printf("%s\n",recieveBuffer );
+
+    // Message loop
+    while (1) {
+        printf("Enter message: ");
+        fgets(buffer, 1024, stdin);
+        send(sock, buffer, strlen(buffer), 0);
+
+        // Receive response
+        int valread = read(sock, buffer, 1024);
+        if (valread > 0) {
+            buffer[valread] = '\0';
+            printf("Received: %s\n", buffer);
+        }
+    }
+
     return 0;
 }
