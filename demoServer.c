@@ -6,11 +6,15 @@
 #include <netinet/in.h>
 #include <string.h>
 #include <errno.h>
+#include <sys/wait.h>
 
 #define PORT 8080
 #define MAX_CLIENTS 2
+void sigHandler(int);
 
 int main() {
+    signal(SIGINT, sigHandler);
+   
     int server_fd, client_sockets[MAX_CLIENTS], new_socket;
     struct sockaddr_in address;
     int opt = 1, addrlen = sizeof(address);
@@ -83,3 +87,7 @@ int main() {
 
     return 0;
 }
+void sigHandler(int sigNum)
+{
+  printf("Please exit from client");
+} 
