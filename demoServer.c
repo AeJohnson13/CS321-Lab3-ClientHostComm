@@ -62,7 +62,7 @@ int main() {
         exit(EXIT_FAILURE);
         }
     client_sockets[0] = new_socket;
-    send(new_socket, "Only 1 user connected", strlen("Only 1 user connected"), 0);
+
 
         printf("Client %d connected\n", 0 + 1);
     
